@@ -97,9 +97,11 @@ Generated README to help run and debug the project locally.
 
 Overview screenshots showing the main flows and UI components. These are illustrative SVGs included in the repository.
 
-- Login / Sign in: ![Login](docs/screenshots/login.svg)
-- Forgot password / Send OTP: ![Forgot password](docs/screenshots/forgot-password.svg)
-- Dashboard overview: ![Dashboard](docs/screenshots/dashboard.svg)
+(docs/screenshots/login.png)
+(docs/screenshots/guard.png)
+(docs/screenshots/user.png)
+(doc/screenshots/admin.png)
+(doc/screenshots/report.png)
 
 # Visitor Management System
 
