@@ -95,13 +95,22 @@ Generated README to help run and debug the project locally.
 
 ## Screenshots
 
-Overview screenshots showing the main flows and UI components. These are illustrative SVGs included in the repository.
+Overview screenshots showing the main flows and UI components. These are illustrative screenshots included in the repository.
 
-(docs/screenshots/login.png)
-(docs/screenshots/guard.png)
-(docs/screenshots/user.png)
-(doc/screenshots/admin.png)
-(doc/screenshots/report.png)
+### Login Screen
+![Login Screen](docs/screenshots/login.png)
+
+### Guard Dashboard
+![Guard Dashboard](docs/screenshots/guard.png)
+
+### User Dashboard
+![User Dashboard](docs/screenshots/user.png)
+
+### Admin Panel
+![Admin Panel](docs/screenshots/admin.png)
+
+### Report Page
+![Report Page](docs/screenshots/report.png)
 
 # Visitor Management System
 
