@@ -1,43 +1,56 @@
 import nodemailer from 'nodemailer';
 
 function getTransporter() {
- const user = process.env.SMTP_USER || process.env.EMAIL_USER;   
- const pass = process.env.SMTP_PASS || process.env.EMAIL_PASS;
+  const user = process.env.SMTP_USER || process.env.EMAIL_USER;
+  const pass = process.env.SMTP_PASS || process.env.EMAIL_PASS;
+  const service = process.env.SMTP_SERVICE || process.env.EMAIL_SERVICE;
+  const host = process.env.SMTP_HOST || process.env.EMAIL_HOST;
+  const port = Number(process.env.SMTP_PORT || process.env.EMAIL_PORT || 587);
+  const secure = String(process.env.SMTP_SECURE || process.env.EMAIL_SECURE || 'false') === 'true';
 
   if (!user || !pass) {
-    console.log("SMTP credentials missing");
+    console.log('SMTP credentials missing');
     return null;
   }
 
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
+  const transportOptions = {
     auth: {
       user,
       pass,
     },
-    port: 587,
-    secure: false,
-  });
+  };
 
-  transporter.verify(function (error, success) {
+  if (service) {
+    transportOptions.service = service;
+  } else if (host) {
+    transportOptions.host = host;
+    transportOptions.port = Number.isFinite(port) ? port : 587;
+    transportOptions.secure = secure;
+  } else {
+    transportOptions.service = 'gmail';
+  }
+
+  const transporter = nodemailer.createTransport(transportOptions);
+
+  transporter.verify(function (error) {
     if (error) {
-      console.log("SMTP ERROR:", error);
+      console.log('SMTP ERROR:', error.message);
     } else {
-      console.log("SMTP SERVER READY");
+      console.log('SMTP SERVER READY');
     }
   });
 
-  return transporter; 
+  return transporter;
 }
 
 export async function sendMail({ to, subject, text, html }) {
   try {
     const transporter = getTransporter();
 
-    console.log("Transporter Created");
+    console.log('Transporter created');
 
     if (!transporter) {
-      console.log("Transporter is NULL");
+      console.log('Transporter is NULL');
       return false;
     }
 
@@ -57,12 +70,12 @@ export async function sendMail({ to, subject, text, html }) {
       html,
     });
 
-    console.log("EMAIL SENT:", info);
+    console.log('EMAIL SENT:', info.messageId || 'ok');
 
     return true;
 
   } catch (error) {
-    console.error("REAL MAIL ERROR:");
+    console.error('REAL MAIL ERROR:');
     console.error(error);
 
     return false;

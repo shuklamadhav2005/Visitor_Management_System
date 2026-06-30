@@ -47,9 +47,12 @@ JWT_SECRET=your_jwt_secret
 CLIENT_ORIGIN=http://localhost:5173
 
 # Email (for production use an App Password for Gmail)
-EMAIL_SERVICE=gmail
-EMAIL_USER=you@example.com
-EMAIL_PASS=your-app-password
+SMTP_SERVICE=gmail
+SMTP_USER=you@example.com
+SMTP_PASS=your-app-password
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_SECURE=false
 EMAIL_FROM_NAME="Visitor Management System"
 
 ADMIN_CODE=invite-admin
@@ -58,6 +61,10 @@ SECURITY_CODE=invite-security
 
 Notes:
 - If SMTP is not configured the app will not send emails; in development the backend returns a dev OTP when `NODE_ENV !== 'production'`.
+- The backend accepts either `SMTP_*` or `EMAIL_*` variable names.
+- On Render, set the same email variables in the service environment settings. If you are not using Gmail, provide `SMTP_HOST`, `SMTP_PORT`, and `SMTP_SECURE` instead of `SMTP_SERVICE`.
+- For Gmail on Render, use a Google App Password, not your normal account password.
+- Required Render env vars for email: `SMTP_USER`, `SMTP_PASS`, and either `SMTP_SERVICE=gmail` or `SMTP_HOST=smtp.gmail.com`, `SMTP_PORT=587`, `SMTP_SECURE=false`.
 
 ## OTP / Password reset flow
 
