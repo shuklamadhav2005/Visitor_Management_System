@@ -1,42 +1,33 @@
 import nodemailer from 'nodemailer';
 
 function getTransporter() {
-  const service = process.env.SMTP_SERVICE || process.env.EMAIL_SERVICE;
-  const host = process.env.SMTP_HOST || process.env.EMAIL_HOST;
-  const port = Number(process.env.SMTP_PORT || process.env.EMAIL_PORT || 587);
-  const user = process.env.SMTP_USER || process.env.EMAIL_USER;
-  const pass = process.env.SMTP_PASS || process.env.EMAIL_PASS;
+ const user = process.env.SMTP_USER || process.env.EMAIL_USER;   
+ const pass = process.env.SMTP_PASS || process.env.EMAIL_PASS;
 
-  if (!user || !pass || (!service && !host)) {
+  if (!user || !pass) {
+    console.log("SMTP credentials missing");
     return null;
   }
 
-  const transportConfig = {
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
     auth: {
       user,
       pass,
     },
-  };
+    port: 587,
+    secure: false,
+  });
 
-  if (service) {
-    transportConfig.service = service;
-  } else {
-    transportConfig.host = host;
-    transportConfig.port = port;
-    transportConfig.secure = String(process.env.SMTP_SECURE || process.env.EMAIL_SECURE || '').toLowerCase() === 'true' || port === 465;
-  }
+  transporter.verify(function (error, success) {
+    if (error) {
+      console.log("SMTP ERROR:", error);
+    } else {
+      console.log("SMTP SERVER READY");
+    }
+  });
 
-  const transporter = nodemailer.createTransport(transportConfig);
-
-transporter.verify(function (error, success) {
-  if (error) {
-    console.log("SMTP ERROR:", error);
-  } else {
-    console.log("SMTP SERVER READY");
-  }
-});
-
-return transporter;
+  return transporter; 
 }
 
 export async function sendMail({ to, subject, text, html }) {
