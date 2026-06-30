@@ -1,8 +1,14 @@
 import dns from 'dns';
 import nodemailer from 'nodemailer';
 
+dns.setDefaultResultOrder('ipv4first');
+
 function ipv4Lookup(hostname, options, callback) {
-  return dns.lookup(hostname, { ...options, family: 4 }, callback);
+  const lookupOptions = typeof options === 'object' && options !== null
+    ? { ...options, family: 4 }
+    : { family: 4 };
+
+  return dns.lookup(hostname, lookupOptions, callback);
 }
 
 function getTransporter() {
