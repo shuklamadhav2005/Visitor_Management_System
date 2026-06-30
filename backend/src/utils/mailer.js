@@ -20,14 +20,18 @@ function getTransporter() {
     },
   };
 
-  if (service) {
-    transportOptions.service = service;
-  } else if (host) {
-    transportOptions.host = host;
+  if (host || service === 'gmail') {
+    transportOptions.host = host || 'smtp.gmail.com';
     transportOptions.port = Number.isFinite(port) ? port : 587;
     transportOptions.secure = secure;
+    transportOptions.family = 4;
+  } else if (service) {
+    transportOptions.service = service;
   } else {
-    transportOptions.service = 'gmail';
+    transportOptions.host = 'smtp.gmail.com';
+    transportOptions.port = 587;
+    transportOptions.secure = false;
+    transportOptions.family = 4;
   }
 
   const transporter = nodemailer.createTransport(transportOptions);
