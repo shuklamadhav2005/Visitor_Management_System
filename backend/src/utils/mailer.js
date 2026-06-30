@@ -1,4 +1,9 @@
+import dns from 'dns';
 import nodemailer from 'nodemailer';
+
+function ipv4Lookup(hostname, options, callback) {
+  return dns.lookup(hostname, { ...options, family: 4 }, callback);
+}
 
 function getTransporter() {
   const user = process.env.SMTP_USER || process.env.EMAIL_USER;
@@ -25,6 +30,7 @@ function getTransporter() {
     transportOptions.port = Number.isFinite(port) ? port : 587;
     transportOptions.secure = secure;
     transportOptions.family = 4;
+    transportOptions.lookup = ipv4Lookup;
   } else if (service) {
     transportOptions.service = service;
   } else {
@@ -32,6 +38,7 @@ function getTransporter() {
     transportOptions.port = 587;
     transportOptions.secure = false;
     transportOptions.family = 4;
+    transportOptions.lookup = ipv4Lookup;
   }
 
   const transporter = nodemailer.createTransport(transportOptions);
