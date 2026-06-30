@@ -40,25 +40,25 @@ return transporter;
 }
 
 export async function sendMail({ to, subject, text, html }) {
-  const transporter = getTransporter();
-
-  console.log("Transporter:", transporter);
-
-  const user =
-    process.env.SMTP_USER || process.env.EMAIL_USER;
-
-  const from =
-    process.env.SMTP_FROM ||
-    process.env.EMAIL_FROM ||
-    `${process.env.EMAIL_FROM_NAME || 'Smart Visitor System'} <${user || 'no-reply@example.com'}>`;
-
-  if (!transporter) {
-    console.log("Transporter not created");
-    return false;
-  }
-
   try {
-    await transporter.sendMail({
+    const transporter = getTransporter();
+
+    console.log("Transporter Created");
+
+    if (!transporter) {
+      console.log("Transporter is NULL");
+      return false;
+    }
+
+    const user =
+      process.env.SMTP_USER || process.env.EMAIL_USER;
+
+    const from =
+      process.env.SMTP_FROM ||
+      process.env.EMAIL_FROM ||
+      `${process.env.EMAIL_FROM_NAME || 'Smart Visitor System'} <${user}>`;
+
+    const info = await transporter.sendMail({
       from,
       to,
       subject,
@@ -66,11 +66,14 @@ export async function sendMail({ to, subject, text, html }) {
       html,
     });
 
-    console.log("Email sent successfully");
+    console.log("EMAIL SENT:", info);
+
     return true;
 
   } catch (error) {
-    console.log("MAIL ERROR:", error);
+    console.error("REAL MAIL ERROR:");
+    console.error(error);
+
     return false;
   }
 }
