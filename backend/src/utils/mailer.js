@@ -31,20 +31,36 @@ function getTransporter() {
 
 export async function sendMail({ to, subject, text, html }) {
   const transporter = getTransporter();
-  const user = process.env.SMTP_USER || process.env.EMAIL_USER;
-  const from = process.env.SMTP_FROM || process.env.EMAIL_FROM || `${process.env.EMAIL_FROM_NAME || 'Smart Visitor System'} <${user || 'no-reply@example.com'}>`;
+
+  console.log("Transporter:", transporter);
+
+  const user =
+    process.env.SMTP_USER || process.env.EMAIL_USER;
+
+  const from =
+    process.env.SMTP_FROM ||
+    process.env.EMAIL_FROM ||
+    `${process.env.EMAIL_FROM_NAME || 'Smart Visitor System'} <${user || 'no-reply@example.com'}>`;
 
   if (!transporter) {
+    console.log("Transporter not created");
     return false;
   }
 
-  await transporter.sendMail({
-    from,
-    to,
-    subject,
-    text,
-    html,
-  });
+  try {
+    await transporter.sendMail({
+      from,
+      to,
+      subject,
+      text,
+      html,
+    });
 
-  return true;
+    console.log("Email sent successfully");
+    return true;
+
+  } catch (error) {
+    console.log("MAIL ERROR:", error);
+    return false;
+  }
 }
