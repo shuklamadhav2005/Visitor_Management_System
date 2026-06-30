@@ -46,8 +46,11 @@ SECRET=your_jwt_secret
 JWT_SECRET=your_jwt_secret
 CLIENT_ORIGIN=http://localhost:5173
 
-# Email (for production use an App Password for Gmail)
-SMTP_SERVICE=gmail
+# Email (Resend preferred on Render)
+RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxxxx
+RESEND_FROM="Visitor Management System <onboarding@resend.dev>"
+
+# Optional SMTP fallback (used only if RESEND_API_KEY is missing or Resend fails)
 SMTP_USER=you@example.com
 SMTP_PASS=your-app-password
 SMTP_HOST=smtp.gmail.com
@@ -60,11 +63,10 @@ SECURITY_CODE=invite-security
 ```
 
 Notes:
-- If SMTP is not configured the app will not send emails; in development the backend returns a dev OTP when `NODE_ENV !== 'production'`.
-- The backend accepts either `SMTP_*` or `EMAIL_*` variable names.
-- On Render, set the same email variables in the service environment settings. If you are not using Gmail, provide `SMTP_HOST`, `SMTP_PORT`, and `SMTP_SECURE` instead of `SMTP_SERVICE`.
-- For Gmail on Render, use a Google App Password, not your normal account password.
-- Required Render env vars for email: `SMTP_USER`, `SMTP_PASS`, and either `SMTP_SERVICE=gmail` or `SMTP_HOST=smtp.gmail.com`, `SMTP_PORT=587`, `SMTP_SECURE=false`.
+- The backend uses Resend first when `RESEND_API_KEY` is set.
+- If Resend is not configured (or fails), SMTP fallback is used when SMTP vars are available.
+- Recommended Render vars for email: `RESEND_API_KEY` and `RESEND_FROM`.
+- For Resend sandbox testing, `onboarding@resend.dev` works with your account email. For production, use a verified sender domain in Resend.
 
 ## OTP / Password reset flow
 

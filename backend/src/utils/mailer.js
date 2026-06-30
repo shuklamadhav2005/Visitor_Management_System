@@ -1,5 +1,6 @@
 import dns from 'dns';
 import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
 dns.setDefaultResultOrder('ipv4first');
 
@@ -9,6 +10,40 @@ function ipv4Lookup(hostname, options, callback) {
     : { family: 4 };
 
   return dns.lookup(hostname, lookupOptions, callback);
+}
+
+function getResendClient() {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    return null;
+  }
+
+  return new Resend(apiKey);
+}
+
+async function sendWithResend({ to, subject, text, html }) {
+  const resend = getResendClient();
+  if (!resend) {
+    return false;
+  }
+
+  const from = process.env.RESEND_FROM || process.env.EMAIL_FROM || 'Smart Visitor System <onboarding@resend.dev>';
+
+  const recipients = Array.isArray(to) ? to : [to];
+  const { data, error } = await resend.emails.send({
+    from,
+    to: recipients,
+    subject,
+    text,
+    html,
+  });
+
+  if (error) {
+    throw new Error(error.message || 'Resend email failed');
+  }
+
+  console.log('RESEND EMAIL SENT:', data?.id || 'ok');
+  return true;
 }
 
 function getTransporter() {
@@ -62,6 +97,10 @@ function getTransporter() {
 
 export async function sendMail({ to, subject, text, html }) {
   try {
+    if (process.env.RESEND_API_KEY) {
+      return await sendWithResend({ to, subject, text, html });
+    }
+
     const transporter = getTransporter();
 
     console.log('Transporter created');
@@ -94,6 +133,36 @@ export async function sendMail({ to, subject, text, html }) {
   } catch (error) {
     console.error('REAL MAIL ERROR:');
     console.error(error);
+
+    if (!process.env.RESEND_API_KEY) {
+      return false;
+    }
+
+    try {
+      const transporter = getTransporter();
+      if (!transporter) {
+        return false;
+      }
+
+      const user = process.env.SMTP_USER || process.env.EMAIL_USER;
+      const from =
+        process.env.SMTP_FROM ||
+        process.env.EMAIL_FROM ||
+        `${process.env.EMAIL_FROM_NAME || 'Smart Visitor System'} <${user}>`;
+
+      const info = await transporter.sendMail({
+        from,
+        to,
+        subject,
+        text,
+        html,
+      });
+
+      console.log('SMTP FALLBACK SENT:', info.messageId || 'ok');
+      return true;
+    } catch (fallbackError) {
+      console.error('SMTP fallback failed:', fallbackError);
+    }
 
     return false;
   }
