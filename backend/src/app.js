@@ -12,8 +12,8 @@ const app = express();
 const allowedOrigin = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
 
 const allowedOrigins = [
-  "http://localhost:5173",
-  "https://visitor-management-system-frontend-ozvx-nzzx9129v.vercel.app",
+  'http://localhost:5173',
+  allowedOrigin,
 ];
 
 app.use(
@@ -22,7 +22,7 @@ app.use(
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
-        callback(new Error("Not allowed by CORS"));
+        callback(new Error('Not allowed by CORS'));
       }
     },
     credentials: true,
