@@ -26,7 +26,17 @@ function getTransporter() {
     transportConfig.secure = String(process.env.SMTP_SECURE || process.env.EMAIL_SECURE || '').toLowerCase() === 'true' || port === 465;
   }
 
-  return nodemailer.createTransport(transportConfig);
+  const transporter = nodemailer.createTransport(transportConfig);
+
+transporter.verify(function (error, success) {
+  if (error) {
+    console.log("SMTP ERROR:", error);
+  } else {
+    console.log("SMTP SERVER READY");
+  }
+});
+
+return transporter;
 }
 
 export async function sendMail({ to, subject, text, html }) {
