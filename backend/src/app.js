@@ -11,7 +11,23 @@ const app = express();
 
 const allowedOrigin = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
 
-app.use(cors({ origin: allowedOrigin, credentials: true }));
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://visitor-management-system-frontend-ozvx-nzzx9129v.vercel.app",
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
 app.use(express.json({ limit: '1mb' }));
 app.use(morgan('dev'));
 
